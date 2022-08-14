@@ -1,0 +1,9 @@
+name: "KraskaskaSocialCreditScore"
+main: "com.kraskaska.minecraft.plugins.socialcredit.SCSPlugin"
+version: "1.0"
+api-version: 1.19
+softdepend: [PlaceholderAPI]
+commands:
+  socialcredit:
+    description: 荣耀归于中国
+    usage: /<command>
