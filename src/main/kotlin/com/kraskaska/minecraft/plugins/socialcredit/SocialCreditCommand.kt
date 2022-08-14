@@ -16,12 +16,12 @@ object SocialCreditCommand : CommandExecutor, TabCompleter {
         if (args.isEmpty()) {
             if (sender !is Player) {
                 val message =
-                    ComponentBuilder().text("Console may not see its own social credit score. Use /socialcredit inspect <player> instead")
+                    ComponentBuilder().text("Консоль не может видеть свой социальный рейтинг. Используйте команду /socialcredit inspect <player>")
                         .color(ChatColor.AQUA).build()
                 sender.spigot().sendMessage(message)
                 return true
             }
-            val message = ComponentBuilder().text("Your social credit score: ").color(ChatColor.AQUA)
+            val message = ComponentBuilder().text("Ваш социальный рейтинг: ").color(ChatColor.AQUA)
                 .text((SocialCreditData.get(sender.uniqueId)?.score() ?: 0).toString()).color(
                     if ((SocialCreditData.get(sender.uniqueId)?.score() ?: 0) >= 0) ChatColor.GREEN else ChatColor.RED
                 ).build()
@@ -32,7 +32,7 @@ object SocialCreditCommand : CommandExecutor, TabCompleter {
             "add" -> {
                 if (!sender.hasPermission("socialcredit.add") && !sender.isOp) {
                     sender.spigot().sendMessage(
-                        ComponentBuilder().text("You don't have permissions to execute this command")
+                        ComponentBuilder().text("У вас недостаточно прав чтобы выполнить эту команду.")
                             .color(ChatColor.RED).build()
                     )
                     return true
@@ -40,7 +40,7 @@ object SocialCreditCommand : CommandExecutor, TabCompleter {
                 // add Kraskaska 1 two
                 if (args.size < 3) {
                     sender.spigot().sendMessage(
-                        ComponentBuilder().text("Usage: /socialcredit add <player> <score> [reason]")
+                        ComponentBuilder().text("Синтаксис команды: /socialcredit add <player> <score> [reason]")
                             .color(ChatColor.RED).build()
                     )
                     return true
@@ -51,28 +51,32 @@ object SocialCreditCommand : CommandExecutor, TabCompleter {
                             ?: sender.server.offlinePlayers.firstOrNull { offlinePlayer -> offlinePlayer.name == args[1] }
                             ?: sender.server.getOfflinePlayer(UUID.fromString(args[1]))
                 } catch (e: java.lang.IllegalArgumentException) {
-                    val message = ComponentBuilder().text("This is not a valid UUID.").color(ChatColor.RED).build()
+                    val message = ComponentBuilder().text("Неверный UUID.").color(ChatColor.RED).build()
                     sender.spigot().sendMessage(message)
                     return true
                 }
                 val score = args[2].toInt()
                 val reason = if (args.size >= 4) args.slice(3..args.lastIndex).joinToString(" ") else null
                 SocialCreditData.add(player.uniqueId, score, reason)
-                val message = ComponentBuilder().text("${player.name}'s").color(ChatColor.LIGHT_PURPLE)
-                    .text(" social credit score has been increased by ${score}.").color(ChatColor.AQUA).build()
+                val message =
+                    player.name?.let {
+                        ComponentBuilder().text("Социальный рейтинг игрока ").color(ChatColor.AQUA).text(it)
+                            .color(ChatColor.LIGHT_PURPLE).text(" был увеличен на ${score} очков.")
+                            .color(ChatColor.AQUA).build()
+                    }
                 sender.spigot().sendMessage(message)
             }
             "remove" -> {
                 if (!sender.hasPermission("socialcredit.remove") && !sender.isOp) {
                     sender.spigot().sendMessage(
-                        ComponentBuilder().text("You don't have permissions to execute this command")
+                        ComponentBuilder().text("У вас недостаточно прав чтобы выполнить эту команду.")
                             .color(ChatColor.RED).build()
                     )
                     return true
                 }
                 if (args.size < 3) {
                     sender.spigot().sendMessage(
-                        ComponentBuilder().text("Usage: /socialcredit remove <player> <score> [reason]")
+                        ComponentBuilder().text("Синтаксис команды: /socialcredit remove <player> <score> [reason]")
                             .color(ChatColor.RED).build()
                     )
                     return true
@@ -83,28 +87,32 @@ object SocialCreditCommand : CommandExecutor, TabCompleter {
                             ?: sender.server.offlinePlayers.firstOrNull { offlinePlayer -> offlinePlayer.name == args[1] }
                             ?: sender.server.getOfflinePlayer(UUID.fromString(args[1]))
                 } catch (e: java.lang.IllegalArgumentException) {
-                    val message = ComponentBuilder().text("This is not a valid UUID.").color(ChatColor.RED).build()
+                    val message = ComponentBuilder().text("Неверный UUID.").color(ChatColor.RED).build()
                     sender.spigot().sendMessage(message)
                     return true
                 }
                 val score = args[2].toInt()
                 val reason = if (args.size >= 4) args.slice(3..args.lastIndex).joinToString(" ") else null
                 SocialCreditData.remove(player.uniqueId, score, reason)
-                val message = ComponentBuilder().text("${player.name}'s").color(ChatColor.LIGHT_PURPLE)
-                    .text(" social credit score has been decreased by ${score}.").color(ChatColor.AQUA).build()
+                val message =
+                    player.name?.let {
+                        ComponentBuilder().text("Социальный рейтинг игрока ").color(ChatColor.AQUA).text(it)
+                            .color(ChatColor.LIGHT_PURPLE).text(" был уменьшен на ${score} очков.")
+                            .color(ChatColor.AQUA).build()
+                    }
                 sender.spigot().sendMessage(message)
             }
             "set" -> {
                 if (!sender.hasPermission("socialcredit.set") && !sender.isOp) {
                     sender.spigot().sendMessage(
-                        ComponentBuilder().text("You don't have permissions to execute this command")
+                        ComponentBuilder().text("У вас недостаточно прав чтобы выполнить эту команду.")
                             .color(ChatColor.RED).build()
                     )
                     return true
                 }
                 if (args.size < 3) {
                     sender.spigot().sendMessage(
-                        ComponentBuilder().text("Usage: /socialcredit set <player> <score> [reason]")
+                        ComponentBuilder().text("Синтаксис команды: /socialcredit set <player> <score> [reason]")
                             .color(ChatColor.RED).build()
                     )
                     return true
@@ -115,21 +123,25 @@ object SocialCreditCommand : CommandExecutor, TabCompleter {
                             ?: sender.server.offlinePlayers.firstOrNull { offlinePlayer -> offlinePlayer.name == args[1] }
                             ?: sender.server.getOfflinePlayer(UUID.fromString(args[1]))
                 } catch (e: java.lang.IllegalArgumentException) {
-                    val message = ComponentBuilder().text("This is not a valid UUID.").color(ChatColor.RED).build()
+                    val message = ComponentBuilder().text("Неверный UUID.").color(ChatColor.RED).build()
                     sender.spigot().sendMessage(message)
                     return true
                 }
                 val score = args[2].toInt()
                 val reason = if (args.size >= 4) args.slice(3..args.lastIndex).joinToString(" ") else null
                 SocialCreditData.set(player.uniqueId, score, reason)
-                val message = ComponentBuilder().text("${player.name}'s").color(ChatColor.LIGHT_PURPLE)
-                    .text(" social credit score has been set to ${score}.").color(ChatColor.AQUA).build()
+                val message =
+                    player.name?.let {
+                        ComponentBuilder().text("Социальный рейтинг игрока ").color(ChatColor.AQUA).text(it)
+                            .color(ChatColor.LIGHT_PURPLE).text(" был установлен на значении ${score} очков.")
+                            .color(ChatColor.AQUA).build()
+                    }
                 sender.spigot().sendMessage(message)
             }
             "reset" -> {
                 if (!sender.hasPermission("socialcredit.reset") && !sender.isOp) {
                     sender.spigot().sendMessage(
-                        ComponentBuilder().text("You don't have permissions to execute this command")
+                        ComponentBuilder().text("У вас недостаточно прав чтобы выполнить эту команду.")
                             .color(ChatColor.RED).build()
                     )
                     return true
@@ -137,8 +149,8 @@ object SocialCreditCommand : CommandExecutor, TabCompleter {
                 // reset Kraskaska two
                 if (args.size < 2) {
                     sender.spigot().sendMessage(
-                        ComponentBuilder().text("Usage: /socialcredit reset <player> [reason]").color(ChatColor.RED)
-                            .build()
+                        ComponentBuilder().text("Синтаксис команды: /socialcredit reset <player> [reason]")
+                            .color(ChatColor.RED).build()
                     )
                     return true
                 }
@@ -148,27 +160,32 @@ object SocialCreditCommand : CommandExecutor, TabCompleter {
                             ?: sender.server.offlinePlayers.firstOrNull { offlinePlayer -> offlinePlayer.name == args[1] }
                             ?: sender.server.getOfflinePlayer(UUID.fromString(args[1]))
                 } catch (e: java.lang.IllegalArgumentException) {
-                    val message = ComponentBuilder().text("This is not a valid UUID.").color(ChatColor.RED).build()
+                    val message = ComponentBuilder().text("Неверный UUID.").color(ChatColor.RED).build()
                     sender.spigot().sendMessage(message)
                     return true
                 }
                 val reason = if (args.size >= 4) args.slice(3..args.lastIndex).joinToString(" ") else null
                 SocialCreditData.reset(player.uniqueId, reason)
-                val message = ComponentBuilder().text("${player.name}'s").color(ChatColor.LIGHT_PURPLE)
-                    .text(" social credit score has been reset.").color(ChatColor.AQUA).build()
+                val message =
+                    player.name?.let {
+                        ComponentBuilder().text("Социальный рейтинг игрока ").color(ChatColor.AQUA).text(it)
+                            .color(ChatColor.LIGHT_PURPLE).text(" был сброшен в 0.")
+                            .color(ChatColor.AQUA).build()
+                    }
                 sender.spigot().sendMessage(message)
             }
             "inspect" -> {
                 if (!sender.hasPermission("socialcredit.inspect") && !sender.isOp) {
                     sender.spigot().sendMessage(
-                        ComponentBuilder().text("You don't have permissions to execute this command")
+                        ComponentBuilder().text("У вас недостаточно прав чтобы выполнить эту команду.")
                             .color(ChatColor.RED).build()
                     )
                     return true
                 }
                 if (args.size < 2) {
                     sender.spigot().sendMessage(
-                        ComponentBuilder().text("Usage: /socialcredit inspect <player>").color(ChatColor.RED).build()
+                        ComponentBuilder().text("Синтаксис команды: /socialcredit inspect <player>")
+                            .color(ChatColor.RED).build()
                     )
                     return true
                 }
@@ -178,7 +195,7 @@ object SocialCreditCommand : CommandExecutor, TabCompleter {
                             ?: sender.server.offlinePlayers.firstOrNull { offlinePlayer -> offlinePlayer.name == args[1] }
                             ?: sender.server.getOfflinePlayer(UUID.fromString(args[1]))
                 } catch (e: java.lang.IllegalArgumentException) {
-                    val message = ComponentBuilder().text("This is not a valid UUID.").color(ChatColor.RED).build()
+                    val message = ComponentBuilder().text("Неверный UUID.").color(ChatColor.RED).build()
                     sender.spigot().sendMessage(message)
                     return true
                 }
@@ -194,7 +211,7 @@ object SocialCreditCommand : CommandExecutor, TabCompleter {
             "history" -> {
                 if (!sender.hasPermission("socialcredit.history") && !sender.isOp && !(args.size < 2 && sender is Player)) {
                     sender.spigot().sendMessage(
-                        ComponentBuilder().text("You don't have permissions to execute this command")
+                        ComponentBuilder().text("У вас недостаточно прав чтобы выполнить эту команду.")
                             .color(ChatColor.RED).build()
                     )
                     return true
@@ -206,15 +223,18 @@ object SocialCreditCommand : CommandExecutor, TabCompleter {
                         ?: sender.server.offlinePlayers.firstOrNull { offlinePlayer -> offlinePlayer.name == args[1] }
                         ?: sender.server.getOfflinePlayer(UUID.fromString(args[1]))
                 } catch (e: java.lang.IllegalArgumentException) {
-                    val message = ComponentBuilder().text("This is not a valid UUID.").color(ChatColor.RED).build()
+                    val message = ComponentBuilder().text("Неверный UUID.").color(ChatColor.RED).build()
                     sender.spigot().sendMessage(message)
                     return true
                 }
-                val message = if (args.size < 2) ComponentBuilder().text("Your")
-                    .color(ChatColor.AQUA) else ComponentBuilder().text("${player.name}'s")
-                    .color(ChatColor.LIGHT_PURPLE)
-                message.text(" social credit score change history: ").color(ChatColor.AQUA)
-                if (SocialCreditData.get(player.uniqueId)?.scores?.isEmpty() == true) message.text("no changes on record.")
+                val message = if (args.size < 2) ComponentBuilder().text("История вашего рейтинга:")
+                    .color(ChatColor.AQUA) else player.name?.let {
+                    ComponentBuilder().text("История рейтинга игрока ")
+                        .color(ChatColor.AQUA).text(it)
+                        .color(ChatColor.LIGHT_PURPLE).text(": ")
+                        .color(ChatColor.AQUA)
+                }!!
+                if (SocialCreditData.get(player.uniqueId)?.scores?.isEmpty() == true) message.text("истории изменения нет.")
                     .color(
                         ChatColor.GRAY
                     ).italics()
@@ -223,13 +243,13 @@ object SocialCreditCommand : CommandExecutor, TabCompleter {
                         if (it.first >= 0) ChatColor.GREEN else ChatColor.RED
                     )
                     message.text(" - ")
-                    message.text(it.second ?: "No reason specified").color(ChatColor.GRAY).italics()
+                    message.text(it.second ?: "Причина не указана").color(ChatColor.GRAY).italics()
                 }
                 sender.spigot().sendMessage(message.build())
             }
             else -> {
                 val message =
-                    ComponentBuilder().text("Unknown subcommand ${args[1]}, you can only use: add, remove, set, reset, inspect, history")
+                    ComponentBuilder().text("Неизвестная подкоманда ${args[1]}, должно быть: add, remove, set, reset, inspect, history")
                         .color(ChatColor.RED)
                 sender.spigot().sendMessage(message.build())
             }
@@ -244,15 +264,15 @@ object SocialCreditCommand : CommandExecutor, TabCompleter {
         if (args.size < 2) return arrayOf("add", "remove", "set", "reset", "inspect", "history").filter { item ->
             item.lowercase().startsWith(toComplete.lowercase())
         }.filter {
-                when (it) {
-                    "add" -> sender.isOp || (sender is Player && sender.hasPermission("socialcredit.add"))
-                    "remove" -> sender.isOp || (sender is Player && sender.hasPermission("socialcredit.remove"))
-                    "set" -> sender.isOp || (sender is Player && sender.hasPermission("socialcredit.set"))
-                    "reset" -> sender.isOp || (sender is Player && sender.hasPermission("socialcredit.reset"))
-                    "inspect" -> sender.isOp || (sender is Player && sender.hasPermission("socialcredit.inspect"))
-                    else -> true
-                }
-            }.toMutableList()
+            when (it) {
+                "add" -> sender.isOp || (sender is Player && sender.hasPermission("socialcredit.add"))
+                "remove" -> sender.isOp || (sender is Player && sender.hasPermission("socialcredit.remove"))
+                "set" -> sender.isOp || (sender is Player && sender.hasPermission("socialcredit.set"))
+                "reset" -> sender.isOp || (sender is Player && sender.hasPermission("socialcredit.reset"))
+                "inspect" -> sender.isOp || (sender is Player && sender.hasPermission("socialcredit.inspect"))
+                else -> true
+            }
+        }.toMutableList()
 
         when (args[1].lowercase()) {
             "add" -> {
