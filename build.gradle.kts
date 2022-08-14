@@ -13,14 +13,15 @@ repositories {
     mavenCentral()
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
     maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+    maven("https://jitpack.io")
 }
 
 dependencies {
     implementation("org.spigotmc:spigot-api:1.19.1-R0.1-SNAPSHOT")
     compileOnly("me.clip:placeholderapi:2.11.2")
-//    implementation("org.hibernate:hibernate-core:6.1.2.Final")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.13.3")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.3")
+    compileOnly("com.github.MilkBowl:VaultAPI:1.7")
 }
 
 tasks.withType<KotlinCompile> {

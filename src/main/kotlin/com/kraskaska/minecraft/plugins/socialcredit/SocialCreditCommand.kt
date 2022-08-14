@@ -5,7 +5,6 @@ import org.bukkit.OfflinePlayer
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
-import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
 import java.util.*
@@ -22,15 +21,15 @@ object SocialCreditCommand : CommandExecutor, TabCompleter {
                 return true
             }
             val message = ComponentBuilder().text("Your social credit score: ").color(ChatColor.AQUA)
-                .text((SocialCreditData.get(sender.uniqueId)?.score() ?: 0).toString()).color(
-                    if ((SocialCreditData.get(sender.uniqueId)?.score() ?: 0) >= 0) ChatColor.GREEN else ChatColor.RED
+                .text((SocialCreditData.get(sender.uniqueId)?.score() ?: SocialCreditConfig.config.resetAmount).toString()).color(
+                    if ((SocialCreditData.get(sender.uniqueId)?.score() ?: SocialCreditConfig.config.resetAmount) >= 0) ChatColor.GREEN else ChatColor.RED
                 ).build()
             sender.spigot().sendMessage(message)
             return true
         }// just show the score
         when (args[0].lowercase()) {
             "add" -> {
-                if (!sender.hasPermission("socialcredit.add") && !sender.isOp) {
+                if (sender is Player && SCSPlugin.perms?.playerHas(sender, "socialcredit.add") == false && !sender.isOp) {
                     sender.spigot().sendMessage(
                         ComponentBuilder().text("You don't have permissions to execute this command")
                             .color(ChatColor.RED).build()
@@ -63,7 +62,7 @@ object SocialCreditCommand : CommandExecutor, TabCompleter {
                 sender.spigot().sendMessage(message)
             }
             "remove" -> {
-                if (!sender.hasPermission("socialcredit.remove") && !sender.isOp) {
+                if (sender is Player && SCSPlugin.perms?.playerHas(sender, "socialcredit.remove") == false && !sender.isOp) {
                     sender.spigot().sendMessage(
                         ComponentBuilder().text("You don't have permissions to execute this command")
                             .color(ChatColor.RED).build()
@@ -95,7 +94,7 @@ object SocialCreditCommand : CommandExecutor, TabCompleter {
                 sender.spigot().sendMessage(message)
             }
             "set" -> {
-                if (!sender.hasPermission("socialcredit.set") && !sender.isOp) {
+                if (sender is Player && SCSPlugin.perms?.playerHas(sender, "socialcredit.set") == false && !sender.isOp) {
                     sender.spigot().sendMessage(
                         ComponentBuilder().text("You don't have permissions to execute this command")
                             .color(ChatColor.RED).build()
@@ -127,7 +126,7 @@ object SocialCreditCommand : CommandExecutor, TabCompleter {
                 sender.spigot().sendMessage(message)
             }
             "reset" -> {
-                if (!sender.hasPermission("socialcredit.reset") && !sender.isOp) {
+                if (sender is Player && SCSPlugin.perms?.playerHas(sender, "socialcredit.reset") == false && !sender.isOp) {
                     sender.spigot().sendMessage(
                         ComponentBuilder().text("You don't have permissions to execute this command")
                             .color(ChatColor.RED).build()
@@ -159,7 +158,7 @@ object SocialCreditCommand : CommandExecutor, TabCompleter {
                 sender.spigot().sendMessage(message)
             }
             "inspect" -> {
-                if (!sender.hasPermission("socialcredit.inspect") && !sender.isOp) {
+                if (sender is Player && SCSPlugin.perms?.playerHas(sender, "socialcredit.inspect") == false && !sender.isOp) {
                     sender.spigot().sendMessage(
                         ComponentBuilder().text("You don't have permissions to execute this command")
                             .color(ChatColor.RED).build()
@@ -184,15 +183,15 @@ object SocialCreditCommand : CommandExecutor, TabCompleter {
                 }
                 val message = ComponentBuilder().text("${player.name}'s").color(ChatColor.LIGHT_PURPLE)
                     .text(" social credit score: ").color(ChatColor.AQUA)
-                    .text((SocialCreditData.get(player.uniqueId)?.score() ?: 0).toString()).color(
+                    .text((SocialCreditData.get(player.uniqueId)?.score() ?: SocialCreditConfig.config.resetAmount).toString()).color(
                         if ((SocialCreditData.get(player.uniqueId)?.score()
-                                ?: 0) >= 0
+                                ?: SocialCreditConfig.config.resetAmount) >= 0
                         ) ChatColor.GREEN else ChatColor.RED
                     ).build()
                 sender.spigot().sendMessage(message)
             }
             "history" -> {
-                if (!sender.hasPermission("socialcredit.history") && !sender.isOp && !(args.size < 2 && sender is Player)) {
+                if (sender is Player && SCSPlugin.perms?.playerHas(sender, "socialcredit.history") == false && !sender.isOp && !(args.size < 2 && true)) {
                     sender.spigot().sendMessage(
                         ComponentBuilder().text("You don't have permissions to execute this command")
                             .color(ChatColor.RED).build()
@@ -245,11 +244,11 @@ object SocialCreditCommand : CommandExecutor, TabCompleter {
             item.lowercase().startsWith(toComplete.lowercase())
         }.filter {
                 when (it) {
-                    "add" -> sender.isOp || (sender is Player && sender.hasPermission("socialcredit.add"))
-                    "remove" -> sender.isOp || (sender is Player && sender.hasPermission("socialcredit.remove"))
-                    "set" -> sender.isOp || (sender is Player && sender.hasPermission("socialcredit.set"))
-                    "reset" -> sender.isOp || (sender is Player && sender.hasPermission("socialcredit.reset"))
-                    "inspect" -> sender.isOp || (sender is Player && sender.hasPermission("socialcredit.inspect"))
+                    "add" -> sender.isOp || (sender is Player && SCSPlugin.perms?.playerHas(sender, "socialcredit.add") == true)
+                    "remove" -> sender.isOp || (sender is Player && SCSPlugin.perms?.playerHas(sender, "socialcredit.add") == true)
+                    "set" -> sender.isOp || (sender is Player && SCSPlugin.perms?.playerHas(sender, "socialcredit.add") == true)
+                    "reset" -> sender.isOp || (sender is Player && SCSPlugin.perms?.playerHas(sender, "socialcredit.add") == true)
+                    "inspect" -> sender.isOp || (sender is Player && SCSPlugin.perms?.playerHas(sender, "socialcredit.add") == true)
                     else -> true
                 }
             }.toMutableList()

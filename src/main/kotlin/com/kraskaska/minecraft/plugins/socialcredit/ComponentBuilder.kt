@@ -13,6 +13,7 @@ class ComponentBuilder {
         tempComponent!!.text = str
         color(ChatColor.RESET)
         italics(false)
+        bold(false)
         return this
     }
 
@@ -27,6 +28,14 @@ class ComponentBuilder {
     }
     fun italics(value: Boolean): ComponentBuilder {
         tempComponent!!.isItalic = value
+        return this
+    }
+    fun bold(): ComponentBuilder {
+        tempComponent!!.isBold = true
+        return this
+    }
+    fun bold(value: Boolean): ComponentBuilder {
+        tempComponent!!.isBold = value
         return this
     }
 
