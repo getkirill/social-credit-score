@@ -199,13 +199,15 @@ object SocialCreditCommand : CommandExecutor, TabCompleter {
                     sender.spigot().sendMessage(message)
                     return true
                 }
-                val message = ComponentBuilder().text("${player.name}'s").color(ChatColor.LIGHT_PURPLE)
-                    .text(" social credit score: ").color(ChatColor.AQUA)
-                    .text((SocialCreditData.get(player.uniqueId)?.score() ?: 0).toString()).color(
-                        if ((SocialCreditData.get(player.uniqueId)?.score()
-                                ?: 0) >= 0
-                        ) ChatColor.GREEN else ChatColor.RED
-                    ).build()
+                val message =
+                    player.name?.let {
+                        ComponentBuilder().text("Социальный рейтинг игрока ").color(ChatColor.AQUA).text(it)
+                            .color(ChatColor.LIGHT_PURPLE).text(": ")
+                            .color(ChatColor.AQUA)
+                            .text((SocialCreditData.get(player.uniqueId)?.score() ?: 0).toString()).color(
+                                if ((SocialCreditData.get(player.uniqueId)?.score() ?: 0) >= 0) ChatColor.GREEN else ChatColor.RED
+                            ).build()
+                    }
                 sender.spigot().sendMessage(message)
             }
             "history" -> {
